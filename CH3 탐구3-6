@@ -1,0 +1,24 @@
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+int main() {
+	pid_t pid;
+	
+	pid = fork();
+	if(pid > 0) {
+		printf("부모프로세스: fork()의 리턴 값 = 자식프로세스 pid = %d\n",pid);
+		printf("부모프로세스: 프로세스 pid = %d\n", getpid());
+		wait(NULL);
+		return 0;
+	}
+	else if(pid == 0) {
+		printf("자식프로세스: fork()의 리턴 값 pid = %d\n", pid);
+		printf("자식프로세스: pid = %d, 부모프로세스 pid = %d\n", getpid(),getppid());
+	}
+	else {
+		printf("fork 오류");
+		return 0;
+	}
+}
