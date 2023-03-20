@@ -1,0 +1,35 @@
+1.child.c파일
+
+#include<stdio.h>
+
+int main() {
+	printf("I am child\n");
+	return 100;
+}
+
+2.waitex.c파일
+
+#include<stdio.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+#include<unistd.h>
+
+int main() {
+	pid_t pid;
+	int status;
+	
+	pid = fork();
+	if(pid > 0) {
+		printf("부모프로세스: 자식의 종료를 기다림\n");
+		wait(&status);
+		printf("부모프로세스: child의 종료 코드=%d \n", WEXITSTATUS(status));
+		return 0;
+	}
+	else if(pid == 0) {
+		execlp("./child", "child", NULL);
+	}
+	else { 
+		printf("fork 오류");
+		return 0;
+	}
+}
