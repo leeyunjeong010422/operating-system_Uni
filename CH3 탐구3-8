@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+int main() {
+	pid_t pid, zompid;
+	int status;
+	
+	pid = fork();
+	if(pid > 0) {
+		sleep(10);
+		zompid = wait(&status);
+		printf("부모프로세스: 자식 PID=%d, 종료 코드=%d\n",zompid, WEXITSTATUS(status));
+		return 0;
+	}
+	else if(pid == 0) {
+		printf("자식프로세스: %d 종료합니다.\n", getpid());
+		exit(100);
+	}
+	else {
+		printf("fork 오류");
+		return 0;
+	}
+}
