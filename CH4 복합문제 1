@@ -46,3 +46,6 @@ void* runner(void *param) {
     printf("runner 스레드 %d 종료.\n", idx);
     pthread_exit(0);
 }
+
+
+//gpt랑 풀어본거 혹시 몰라 여기 저장해봅니다..^_^
