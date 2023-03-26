@@ -1,0 +1,27 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+void* calcThread(void *param);
+int sum = 0;
+
+int main() {
+	pthread_t tid;
+	pthread_attr_t attr;
+	
+	pthread_attr_init(&attr);
+	pthread_create(&tid, &attr, calcThread, “100”);
+	
+	pthread_join(tid, NULL);
+	printf(“calcThread 스레드가 종료하였습니다.\n”);
+	printf(“sum = %d\n”, sum);
+}
+
+void* calcThread(void *param) {
+	printf(“calcThread 스레드가 실행을 시작합니다.\n”);
+	int to = atoi(param);
+	int i;
+	
+	for(i=1; i<=to; i++)
+		sum += i;
+}
