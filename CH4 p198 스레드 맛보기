@@ -25,3 +25,6 @@ void* calcThread(void *param) {
 	for(i=1; i<=to; i++)
 		sum += i;
 }
+
+
+gcc 해줄 때 -lathread를 해줘야 함 pthread 라이브러리를 링크시키는 옵션임
