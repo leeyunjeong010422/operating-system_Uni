@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define N_COUNTER 4
+#define MILLI 1000
+
+void mywrite(int n);
+int myread();
+
+pthread_mutex_t critical_section;
+sem_t semWrite, semRead;
+int queue[N_COUNTER];
+int wptr;
+int rptr;
+
+void* producer(void* arg) {
+	for(int i=0; i<10; i++) {
+		mywrite(i);
+		printf("producer : wrote %d\n",i);
+
+		int m = rand()%10;
+		usleep(MILLI*m*10);
+	}
+	return NULL;
+}
+
+void* consumer(void* arg) {
+	for(int i=0; i<10; i++) {
+		int n = myread();
+		printf("\tconsumer : read %d\n",i);
+		
+		int m = rand()%10;
+		usleep(MILLI*m*10);
+	}
+	return NULL;
+}
+
+void mywrite(int n) {
+	sem_wait(&semWrite);
+	pthread_mutex_lock(&critical_section);
+	queue[wptr] = n;
+	wptr++;
+	wptr %= N_COUNTER;
+	pthread_mutex_unlock(&critical_section);
+	sem_post(&semRead);
+}
+
+int myread() {
+	sem_wait(&semRead);
+	pthread_mutex_lock(&critical_section);
+	int n = queue[rptr];
+	rptr++;
+	rptr %= N_COUNTER;
+	pthread_mutex_unlock(&critical_section);
+	sem_post(&semWrite);
+	return n;
+}
+
+int main() {
+	pthread_t t[2];
+	
+	srand(time(NULL));
+	pthread_mutex_init(&critical_section,NULL);
+	sem_init(&semWrite, 0, N_COUNTER);
+	sem_init(&semRead, 0, 0);
+
+	pthread_create(&t[0], NULL, producer, NULL);
+	pthread_create(&t[1], NULL, consumer, NULL);
+
+	for(int i=0; i<2; i++) 
+		pthread_join(t[i],NULL);
+	
+	sem_destroy(&semRead);
+	sem_destroy(&semWrite);
+	
+	pthread_mutex_destroy(&critical_section);
+	return 0;
+}
