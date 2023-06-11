@@ -1,5 +1,7 @@
 #include <stdio.h>
+
 int n = 10;
+
 int main() {
         printf("변수n의 주소는 %p\n", &n);
 }
